@@ -1,0 +1,30 @@
+node 
+{
+    
+    stage('ContinuousDownload') 
+    {
+     git 'https://github.com/intelliqittrainings/maven.git'
+    }
+    
+     stage('ContinousBuild') 
+    {
+     sh 'mvn package'
+    }
+    
+     stage('ContinousDeployment') 
+    {
+     sh 'scp /home/ubuntu/.jenkins/workspace/sciptedpipelin/webapp/target/webapp.war ubuntu@172.31.83.51:/var/lib/tomcat9/webapps/testapps.war'
+    }
+    
+       stage('ContinousTesting') 
+    {
+     git 'https://github.com/intelliqittrainings/FunctionalTesting'
+     sh 'java -jar /home/ubuntu/.jenkins/workspace/sciptedpipelin/testing.jar'
+    }
+    
+     stage('ContinousDelivery') 
+    {
+     input message: 'Waiting for approval from admin', submitter: 'rami'   
+     sh 'scp /home/ubuntu/.jenkins/workspace/sciptedpipelin/webapp/target/webapp.war ubuntu@172.31.93.153:/var/lib/tomcat9/webapps/prodapps.war'
+    }
+}
